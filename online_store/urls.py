@@ -1,5 +1,4 @@
 """online_store URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
 Examples:
@@ -15,11 +14,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from posts.views import main_view, products_view
+from product.views import main_view, products_view, product_detail_view
+from django.conf.urls.static import static
+from online_store import settings
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', main_view),
-    path('posts/', products_view)
+    path('product/', products_view),
+    path('product/<int:id>/', product_detail_view)
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
