@@ -11,10 +11,10 @@ def main_view(request):
 
 def products_view(request):
     if request.method == 'GET':
-        product = Product.objects.all()
+        products = Product.objects.all()
 
         context = {
-            'product': [
+            'products': [
                 {
                     'id': product.id,
                     'title': product.title,
@@ -22,7 +22,7 @@ def products_view(request):
                     'image': product.image,
                     'hashtags': product.hashtags.all
                 }
-                for product in product
+                for product in products
             ]
         }
 
