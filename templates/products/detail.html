@@ -2,12 +2,12 @@
 
 {% block content %}
     <style type="text/css">
-        .post {
+        .product {
             width: 80%;
             margin-left: 10%;
         }
 
-        .post > img {
+        .product > img {
             width: 100%;
         }
 
@@ -29,7 +29,7 @@
             margin-top: 50px;
         }
     </style>
-    <div class="post">
+    <div class="product">
         <img src="/media/{{ post.image }}" alt="">
         <h1>{{ product.title }}</h1>
         <h5>{{ product.description }}</h5>
@@ -38,6 +38,12 @@
             <h6>{{ product.modified_date }}</h6>
         </div>
         <h6 class="comments_title">Comments:</h6>
+        <form action="/product/{{ product.id }}/" method="post">
+            {% csrf_token %}
+            {{ form }}
+            <input type="submit" value="Add Comment">
+        </form>
+
         <div class="comments">
             {% for comment in comments %}
                 <div class="comment_block">
