@@ -2,18 +2,21 @@ from django.shortcuts import render, redirect
 from product.models import Product, Comment
 from product.forms import ProductCreateForm, CommentCreateForm
 from product.constans import PAGINATION_LIMIT
+from django.views.generic import ListView, CreateView, DetailView
 
 # Create your views here.
 
 
-def main_view(request):
-    if request.method == 'GET':
-        return render(request, 'layouts/index.html')
+class MainPageCBV(ListView):
+    model = Product
 
 
-def products_view(request):
-    if request.method == 'GET':
-        products = Product.objects.all().order_by('-created_date')
+class ProductCBV(ListView):
+    model = Product
+    template_name = 'products/products.html'
+
+    def get(self, request, *args, **kwargs):
+        products = self.get_queryset().order_by('-created_date')
         search = request.GET.get('search')
         page = int(request.GET.get('page', 1))
 
@@ -40,7 +43,7 @@ def products_view(request):
                 for product in products
             ],
             'user': request.user,
-            'pages': range(1, max_page+1)
+            'pages': range(1, max_page + 1)
         }
 
         return render(request, 'products/products.html', context=context)
@@ -78,15 +81,20 @@ def product_detail_view(request, id):
         return render(request, 'products/detail.html', context=context)
 
 
-def create_product_view(request):
-    if request.method == 'GET':
-        context = {
-            'form': ProductCreateForm
+class CreateProductView(ListView, CreateView):
+    model = Product
+    template_name = 'products/create.html'
+    form_class = ProductCreateForm
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        return {
+            'form': self.form_class if not kwargs.get('form') else kwargs['form']
         }
 
-        return render(request, 'products/create.html', context=context)
+    def get(self, request, **kwargs):
+        return render(request, self.template_name, context=self.get_context_data())
 
-    if request.method == 'POST':
+    def post(self, request, **kwargs):
         data, files = request.POST, request.FILES
 
         form = ProductCreateForm(data, files)
@@ -103,4 +111,3 @@ def create_product_view(request):
         return render(request, 'products/create.html', context={
             'form': form
         })
-
